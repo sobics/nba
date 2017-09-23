@@ -8,26 +8,21 @@
 #
 
 library(shiny)
+library(xml2)
+library(dplyr)
 
-# Define UI for application that draws a histogram
+#print(list.files("../../Basketball Data/"))
+
+#print(head(read.csv("../../Basketball Data/Player_Boxscores.csv", stringsAsFactors = FALSE)))
+print("in ui")
 shinyUI(fluidPage(
+   
+   selectInput(inputId = "gameid",
+               label = "Select a Game",
+               choices = 1:10),
   
-  # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  tableOutput("boxscore")
   
-  # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
-    ),
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-       plotOutput("distPlot")
-    )
-  )
+  
+  # Show a plot of the generated distribution
 ))

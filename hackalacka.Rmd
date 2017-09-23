@@ -8,7 +8,7 @@ output: html_document
 #Read in the dataset
 ```{r setup, include=FALSE}
 library(dplyr)
-box <- read.csv("Player_Boxscores.csv")
+box <- read.csv("C:/Users/Nathaniel Brown/Documents/important things/nbahack2017/Basketball Data/Player_Boxscores.csv")
 
 #obtained this from basketball-reference.com
 
@@ -16,56 +16,78 @@ nbox <- box %>% group_by(Season) %>% mutate(lg_AST = mean(Assists), lg_FG = mean
 
 nbox <- nbox %>% group_by(Season, Team_id) %>% mutate(team_AST = mean(Assists), team_FG = mean(Field_Goals)) #team averages
 #nbox <- nbox %>% group_by(Season, Person_id) %>% mutate(Free_Throws = sum(Free_Throws), Free_Throws_Attempted = sum(Free_Throws_Attempted, Assists = sum(Assists), )
+
+nbox <- box %>% group_by(Game_id) %>% mutate(GmPTS = sum(Points), GmFGM = sum(Field_Goals), GmFTM = sum(Free_Throws),
+                                                        GmFTA = sum(Free_Throws_Attempted), GmFGA = sum(Field_Goals_Attempted),
+                                                        GmDREB = sum(Defensive_Rebounds), GmOREB = sum(Offensive_Rebounds),
+                                                        GmAST = sum(Assists), GmSTL = sum(Steals), GmBLK = sum(Blocked_Shots),
+                                                        GmPF = sum(Personal_Fouls), GmTO = sum(Turnovers))
+#(GmPTS + GmFGM + GmFTM - GmFGA - GmFTA + GmDREB + (.5 * GmOREB) + GmAST + GmSTL + (.5 * GmBLK) - GmPF - GmTO)
+nbox <- as.data.frame(nbox)
+
 attach(nbox)
 
 # PER formula
-factor = (2 / 3) - (0.5 * (lg_AST / lg_FG)) / (2 * (lg_FG / lg_FT))
-VOP    = lg_PTS / (lg_FGA - lg_ORB + lg_TOV + 0.44 * lg_FTA)
-DRB   = (lg_TRB - lg_ORB) / lg_TRB
-
-PER = ((1 / (Min_Played+1)) *
-     ( Three_Pointers +
-     + (2/3) * Assists
-     + (2 - factor * (team_AST / team_FG)) * Field_Goals
-     + (Free_Throws *0.5 * (1 + (1 - (team_AST / team_FG)) + (2/3) * (team_AST / team_FG)))
-     - VOP * Turnovers
-     - VOP * DRB * (Field_Goals_Attempted - Field_Goals)
-     - VOP * 0.44 * (0.44 + (0.56 * DRB)) * (Free_Throws_Attempted - Free_Throws)
-     + VOP * (1 - DRB) * (Rebounds - Offensive_Rebounds)
-     + VOP * DRB * Offensive_Rebounds
-     + VOP * Steals
-     + VOP * DRB * Blocked_Shots
-     - Personal_Fouls * ((lg_FT / lg_PF) - 0.44 * (lg_FTA / lg_PF) * VOP)))
-
+# factor = (2 / 3) - (0.5 * (lg_AST / lg_FG)) / (2 * (lg_FG / lg_FT))
+# VOP    = lg_PTS / (lg_FGA - lg_ORB + lg_TOV + 0.44 * lg_FTA)
+# DRB   = (lg_TRB - lg_ORB) / lg_TRB
+# 
+# PER = ((1 / (Min_Played+1)) *
+#      ( Three_Pointers +
+#      + (2/3) * Assists
+#      + (2 - factor * (team_AST / team_FG)) * Field_Goals
+#      + (Free_Throws *0.5 * (1 + (1 - (team_AST / team_FG)) + (2/3) * (team_AST / team_FG)))
+#      - VOP * Turnovers
+#      - VOP * DRB * (Field_Goals_Attempted - Field_Goals)
+#      - VOP * 0.44 * (0.44 + (0.56 * DRB)) * (Free_Throws_Attempted - Free_Throws)
+#      + VOP * (1 - DRB) * (Rebounds - Offensive_Rebounds)
+#      + VOP * DRB * Offensive_Rebounds
+#      + VOP * Steals
+#      + VOP * DRB * Blocked_Shots
+#      - Personal_Fouls * ((lg_FT / lg_PF) - 0.44 * (lg_FTA / lg_PF) * VOP)))
+# 
 
 # WS Formula
-pts_produced <- 0
 
-off_poss <- 0 #individual possessions, not team possessions while player was on court
+# pts_produced <- NA
+# 
+# 
+# off_poss <- 0 #individual possessions, not team possessions while player was on court
+# 
+# marg_offense <- pts_produced - 0.92*lg_pts_per_poss*off_poss
+# 
+# tm_pace <- poss/min
+# lg_pace <- poss/min
+# 
+# marg_pts_per_win <- 0.32*lg_pts_per_game*(tm_pace/lg_pace)
+# 
+# o_win_shares <- marg_offense/marge_pts_per_win
+# 
+# d_pts <- 0
+# 
+# d_poss <- 0 #opposing team possessions while player was on court
+# 
+# d_rtg <- d_pts/d_poss
+# 
+# marg_def <- player_mins/tm_mins * tm_def_poss * ((108 * lg_pts_per_poss) - (d_rtg/100))
+# 
+# d_win_shares <- marg_def/marg_pts_per_win
+# 
+# win_shares <- o_win_shares + d_win_shares
 
-marg_offense <- pts_produced - 0.92*lg_pts_per_poss*off_poss
 
-tm_pace <- poss/min
-lg_pace <- poss/min
-
-marg_pts_per_win <- 0.32*lg_pts_per_game*(tm_pace/lg_pace)
-
-o_win_shares <- marg_offense/marge_pts_per_win
-
-d_pts <- 0
-
-d_poss <- 0 #opposing team possessions while player was on court
-
-d_rtg <- d_pts/d_poss
-
-marg_def <- player_mins/tm_mins * tm_def_poss * ((108 * lg_pts_per_poss) - (d_rtg/100))
-
-d_win_shares <- marg_def/marg_pts_per_win
-
-win_shares <- o_win_shares + d_win_shares
-
+PIE = (Points + Field_Goals + Free_Throws - Field_Goals_Attempted - Free_Throws_Attempted + Defensive_Rebounds + (.5 * Offensive_Rebounds) + Assists + Steals + (.5 * Blocked_Shots) - Personal_Fouls - Turnovers) / (GmPTS + GmFGM + GmFTM - GmFGA - GmFTA + GmDREB + (.5 * GmOREB) + GmAST + GmSTL + (.5 * GmBLK) - GmPF - GmTO)
 ##combine the two
 detach(nbox)
 
-nbox$PER <- PER
+nbox$PIE <- PIE
+
+#top 30 unique players by max(PIE) game.
+top30players <- nbox %>% arrange(-PIE) %>% select(Person_id) %>% unique() %>% head(30)
+
+nbox <- nbox %>% mutate(top30 = (Person_id %in% top30players))
+
+teammap <- read.csv("Team_Map.csv")
+nbox_names <- merge(nbox, teammap, by.x = "Team_id", by.y="Team_ID") %>% rename(Home_City = City, "Home_Team" = Team) %>% merge(teammap, by.x = "vs_team_id", by.y = "Team_ID") %>% rename(Away_City = City, "Away_Team" = Team) %>% select(-grep("SportVU", names(.)))
+
 ```
