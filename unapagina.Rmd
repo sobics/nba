@@ -6,19 +6,19 @@ output: html_document
 ---
 
 One Pager
-
+<!--- Create  a  new  basketball  game  box  score  that  better  tells  the  story  of  the
+game.    Considerations  may  include
+the  addition  of  new  visualizations,
+statistics, and layouts.
+Finally, analyze the impact of the new box score on
+our key stakeholders, pre, during and postgame.--->
 Abstract
-```{r}
-```
+Every game creates a unique story for basketball, a unique story for the NBA fan to experience. For those who miss a game, they can sadly only read through pages and pages of numbers via the current Boxscores system to understand what happened. Our project introduces the New Boxscore, a modern and eye-catching way to understand the game of basketball past just numbers, and instead, through an interactive visualization.
 
 Planned Project
-```{r}
-```
+Our planned project is an interactive Tableau Dashboard that visualizes the current game Boxscore. The interaction will allows fans to navigate through
 
 Method
-```{r}
-```
+
 
 Data Usage
-```{r}
-```
