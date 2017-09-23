@@ -1,0 +1,24 @@
+---
+title: "onepager"
+author: "Sonia Xu"
+date: "September 23, 2017"
+output: html_document
+---
+
+One Pager
+
+Abstract
+```{r}
+```
+
+Planned Project
+```{r}
+```
+
+Method
+```{r}
+```
+
+Data Usage
+```{r}
+```
