@@ -133,13 +133,13 @@ for(i in 225726:nrow(nbox_quants)){
   
 }
 
-X <- runif(100)
-
-ggplot(filter(nbox, Player_Name == "LeBron James"),
-       aes(x=PIE)) + geom_histogram()
+load("boxpiequantiles.RData")
+nbox_quants5 <- nbox_quants %>% 
+                group_by(Date) %>%
+                mutate(top5daily = rank(PIE) <= 5) %>%
+                as.data.frame()
 
 save.image()
-save(file = "")
 ```
 
 ```{r}
@@ -148,4 +148,11 @@ for(j in 2007:2014){
      hist(nbox_quants$PIE[nbox$Player_Name == "Gerald Wallace" & nbox$Season == j], main = j)
 }
 par(mfrow=c(1,1))
+
+#league average doesn't change much
+ggplot(nbox_quants, aes(x = PIE, y = as.factor(Season))) + geom_density_ridges()
+
+ggplot(filter(nbox_quants, Player_Name == "Kobe Bryant"), aes(y = PIE, x = as.factor(Season))) + geom_boxplot()
+
+
 ```
