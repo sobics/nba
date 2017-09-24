@@ -1,0 +1,24 @@
+---
+title: "NBA Hackathon Writeup"
+author: "Nathaniel Brown, Sonia Xu"
+date: "September 24, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+#### Outline
+
+We took the second prompt, and created a new basketball box score. The new layout and visualizations exist in an interactive Tableau Dashboard that focuses on a single-statistic box score summary---the NBA's Player Impact Estimate (PIE) metric. When you select a date, the five top performers from that date appear. Clicking on one will take you to another page with more detailed information about their performance in that game, including the percentiles of their single-game PIE rating with respect to all NBA games (since 2007), all NBA games that season, the players' career games, and the players' season games. For early games in the year and rookie players, these values would default to NA until enough data is accumulated into the system. We do not make any new statistics in this project.
+
+#### Accomplishments
+
+This new way of considering past data while visualizing a box score offers a new perspective for players, coaches, and fans. A traditional box score compares a player's performance in a game to that of everyone else who played in the game, but now we can compare the player to *himself* and the rest of the league.
+ 
+The player comparisons to current individual and league seasons apply to auxilary aspects of the NBA, such as Fantasy basketball and All-Star voting.
+
+#### Data
+
+Our project used the files Player_Boxscores.csv and Team_Map.csv.

@@ -1,0 +1,158 @@
+---
+title: "hackhack"
+author: "Sonia Xu"
+date: "September 23, 2017"
+output: html_document
+---
+
+#Read in the dataset
+```{r setup, include=FALSE}
+library(dplyr)
+setwd("C:/Users/Nathaniel Brown/Documents/important things/nbahack2017/Basketball Data")
+box <- read.csv("Player_Boxscores.csv")
+
+#obtained this from basketball-reference.com
+
+# nbox <- box %>% group_by(Season) %>% mutate(lg_AST = mean(Assists), lg_FG = mean(Field_Goals), lg_ORB = mean(Offensive_Rebounds), lg_FT = mean(Free_Throws), lg_PTS = mean(Points), lg_FGA = mean(Field_Goals_Attempted), lg_TOV = mean(Turnovers), lg_FTA = mean(Free_Throws_Attempted), lg_TRB = mean(Rebounds), lg_PF = mean(Personal_Fouls))#splitting the data into league averages
+# 
+# nbox <- nbox %>% group_by(Season, Team_id) %>% mutate(team_AST = mean(Assists), team_FG = mean(Field_Goals)) #team averages
+#nbox <- nbox %>% group_by(Season, Person_id) %>% mutate(Free_Throws = sum(Free_Throws), Free_Throws_Attempted = sum(Free_Throws_Attempted, Assists = sum(Assists), )
+
+nbox <- box %>% group_by(Game_id) %>% mutate(GmPTS = sum(Points), GmFGM = sum(Field_Goals), GmFTM = sum(Free_Throws),
+                                                        GmFTA = sum(Free_Throws_Attempted), GmFGA = sum(Field_Goals_Attempted),
+                                                        GmDREB = sum(Defensive_Rebounds), GmOREB = sum(Offensive_Rebounds),
+                                                        GmAST = sum(Assists), GmSTL = sum(Steals), GmBLK = sum(Blocked_Shots),
+                                                        GmPF = sum(Personal_Fouls), GmTO = sum(Turnovers))
+#(GmPTS + GmFGM + GmFTM - GmFGA - GmFTA + GmDREB + (.5 * GmOREB) + GmAST + GmSTL + (.5 * GmBLK) - GmPF - GmTO)
+nbox <- as.data.frame(nbox)
+
+attach(nbox)
+
+# PER formula
+# factor = (2 / 3) - (0.5 * (lg_AST / lg_FG)) / (2 * (lg_FG / lg_FT))
+# VOP    = lg_PTS / (lg_FGA - lg_ORB + lg_TOV + 0.44 * lg_FTA)
+# DRB   = (lg_TRB - lg_ORB) / lg_TRB
+# 
+# PER = ((1 / (Min_Played+1)) *
+#      ( Three_Pointers +
+#      + (2/3) * Assists
+#      + (2 - factor * (team_AST / team_FG)) * Field_Goals
+#      + (Free_Throws *0.5 * (1 + (1 - (team_AST / team_FG)) + (2/3) * (team_AST / team_FG)))
+#      - VOP * Turnovers
+#      - VOP * DRB * (Field_Goals_Attempted - Field_Goals)
+#      - VOP * 0.44 * (0.44 + (0.56 * DRB)) * (Free_Throws_Attempted - Free_Throws)
+#      + VOP * (1 - DRB) * (Rebounds - Offensive_Rebounds)
+#      + VOP * DRB * Offensive_Rebounds
+#      + VOP * Steals
+#      + VOP * DRB * Blocked_Shots
+#      - Personal_Fouls * ((lg_FT / lg_PF) - 0.44 * (lg_FTA / lg_PF) * VOP)))
+# 
+
+# WS Formula
+
+# pts_produced <- NA
+# 
+# 
+# off_poss <- 0 #individual possessions, not team possessions while player was on court
+# 
+# marg_offense <- pts_produced - 0.92*lg_pts_per_poss*off_poss
+# 
+# tm_pace <- poss/min
+# lg_pace <- poss/min
+# 
+# marg_pts_per_win <- 0.32*lg_pts_per_game*(tm_pace/lg_pace)
+# 
+# o_win_shares <- marg_offense/marge_pts_per_win
+# 
+# d_pts <- 0
+# 
+# d_poss <- 0 #opposing team possessions while player was on court
+# 
+# d_rtg <- d_pts/d_poss
+# 
+# marg_def <- player_mins/tm_mins * tm_def_poss * ((108 * lg_pts_per_poss) - (d_rtg/100))
+# 
+# d_win_shares <- marg_def/marg_pts_per_win
+# 
+# win_shares <- o_win_shares + d_win_shares
+
+
+PIE = (Points + Field_Goals + Free_Throws - Field_Goals_Attempted - Free_Throws_Attempted + Defensive_Rebounds + (.5 * Offensive_Rebounds) + Assists + Steals + (.5 * Blocked_Shots) - Personal_Fouls - Turnovers) / (GmPTS + GmFGM + GmFTM - GmFGA - GmFTA + GmDREB + (.5 * GmOREB) + GmAST + GmSTL + (.5 * GmBLK) - GmPF - GmTO)
+##combine the two
+detach(nbox)
+
+nbox$PIE <- PIE
+
+#top 30 unique players by max(PIE) game.
+top30players <- nbox %>% arrange(-PIE) %>% select(Person_id) %>% unique() %>% head(30)
+
+nbox <- nbox %>% mutate(top30 = (Person_id %in% top30players[[1]]))
+
+teammap <- read.csv("Team_Map.csv")
+nbox_names <- merge(nbox, teammap, by.x = "Team_id", by.y="Team_ID") %>% rename(Home_City = City, "Home_Team" = Team) %>% merge(teammap, by.x = "vs_team_id", by.y = "Team_ID") %>% rename(Away_City = City, "Away_Team" = Team) %>% select(-grep("SportVU", names(.)))
+
+#daily rapm estimate
+
+nbox_quants <- 0
+
+find_quantile <- function(nums = NA, x = NA){
+  quants <- quantile(nums, seq(0,1,.01))
+  found <- (which(x >= c(-Inf, quants) & (x <= c(quants, Inf))))[1]
+  if(found == 1){
+    return(0)
+  }else{
+    ans <- (as.numeric(gsub("%", "", names(found))))
+    if(ans == 100){ans <- 99}
+    return(ans)
+  }
+}
+
+nbox_names_sub <- nbox_names %>% filter(Player_Name %in% c("LeBron James", "Lorenzo Brown", "Gerald Wallace"))
+
+#what if we have an actual box score? with colors?
+
+nbox_quants <- nbox_names %>% mutate(quant_lg_alltime = NA, quant_lg_szn = NA, quant_p_alltime = NA, quant_p_szn = NA) %>% arrange(Person_id, Season, -PIE)
+
+for(i in 225726:nrow(nbox_quants)){
+  
+  if(i %% 1000 == 0){print(i)}
+  
+  player <- nbox_quants$Person_id[i]
+  season <- nbox_quants$Season[i]
+  pie <- nbox_quants$PIE[i]
+  
+  nbox_lg_alltime <- nbox_quants$PIE
+  nbox_lg_szn     <- nbox_quants$PIE[nbox_quants$Season == season]
+  nbox_p_alltime  <- nbox_quants$PIE[nbox_quants$Person_id == player]
+  nbox_p_szn      <- nbox_quants$PIE[nbox_quants$Season == season & nbox_quants$Person_id == player]
+  
+  nbox_quants$quant_lg_alltime[i] <- find_quantile(nbox_lg_alltime, pie)
+  nbox_quants$quant_lg_szn[i] <- find_quantile(nbox_lg_szn, pie)
+  nbox_quants$quant_p_alltime[i] <- find_quantile(nbox_p_alltime, pie)
+  nbox_quants$quant_p_szn[i] <- find_quantile(nbox_p_szn, pie)
+  
+}
+
+load("boxpiequantiles.RData")
+nbox_quants5 <- nbox_quants %>% 
+                group_by(Date) %>%
+                mutate(top5daily = rank(PIE) <= 5) %>%
+                as.data.frame()
+
+save.image()
+```
+
+```{r}
+par(mfrow=c(3,3))
+for(j in 2007:2014){
+     hist(nbox_quants$PIE[nbox$Player_Name == "Gerald Wallace" & nbox$Season == j], main = j)
+}
+par(mfrow=c(1,1))
+
+#league average doesn't change much
+ggplot(nbox_quants, aes(x = PIE, y = as.factor(Season))) + geom_density_ridges()
+
+ggplot(filter(nbox_quants, Player_Name == "Kobe Bryant"), aes(y = PIE, x = as.factor(Season))) + geom_boxplot()
+
+
+```
