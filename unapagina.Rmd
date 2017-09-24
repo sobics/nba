@@ -5,6 +5,7 @@ date: "September 23, 2017"
 output:
   pdf_document: default
   html_document: default
+  word_document: default
 ---
 <!--- Create  a  new  basketball  game  box  score  that  better  tells  the  story  of  the
 game.    Considerations  may  include
@@ -12,24 +13,33 @@ the  addition  of  new  visualizations,
 statistics, and layouts.
 Finally, analyze the impact of the new box score on
 our key stakeholders, pre, during and postgame.--->
-Abstract 
 
-Every game creates a unique story for basketball, a unique story for the NBA fan to experience. For those who miss a game, they can sadly only read through pages and pages of numbers via the current Boxscores system to understand what happened. Our project introduces the New Boxscore, a modern and eye-catching way to understand the game of basketball past just numbers, and instead, through an interactive visualization.
+#### Abstract 
 
-Planned Project 
+Every game creates a unique story in basketball for the NBA fan to experience. For those who miss a game, they can sadly only read through pages of numbers via the current box scores system to understand what happened. Our project introduces the New Boxscore, a modern and eye-catching way to understand the game of basketball past just numbers, and instead, through an interactive visualization.
+
+#### Planned Project 
 
 Our planned project is an interactive Tableau Dashboard that visualizes the current game Boxscore. The interaction allows fans to navigate through their choice of games, and see an in-depth scoop on individual player performances for that game. By allowing them to interact with the data, users will be able to paint their own stories about the game.
 
-Method
+#### Method
+
 Since we are mainly revamping the visualization of the Boxscore, our methodology is less structured, and more focused on UI.
 
-Home Page App 
-We wanted to use a Boxscore metric that was all-encompassing for the first statistic that users would see, so that they could quickly see a snapshot summary of the game. We noted that current statistics like Winshares, PER, and PIE already capture this. To avoid the learning curve of introducing a new statistic, we decided to utilize an already existing NBA statistics, PIE (Player Impact Estimate) which according to the NBA, shows "what % of game events did that player or team achieve." 
+#### Home Page App 
 
-Secondary Page App 
+We wanted to use a Boxscore metric that was all-encompassing for the first statistic that users would see, so that they could quickly see a snapshot summary of the game. We noted that current statistics like Winshares, PER, and PIE already capture this. To avoid the learning curve of introducing a new statistic, we decided to utilize an already existing NBA statistics, PIE (Player Impact Estimate) which according to the NBA, measures "what % of game events did that player or team achieve." 
+
+#### Secondary Page App 
+
 After the user selects a player and game that they are interested in, they are brought to the second landing page. This landing page compares the player's PIE score to his previous PIE scores, league average PIE scores, and past 5 games via quantiles. We plan on presenting this information in terms of rankings, so that the information is more digestible.
 
-Data Usage
+#### Data Usage
+
 We are utilizing the Player Boxscore csv for all available seasons.
 
 Below is a snapshot of our dashboard:
+```{r warning = FALSE, echo = FALSE}
+library(knitr)
+knitr::include_graphics(path = "C:/Users/Sonia/Documents/NBA/nba/demo45.png")
+```
