@@ -111,7 +111,7 @@ nbox_names_sub <- nbox_names %>% filter(Player_Name %in% c("LeBron James", "Lore
 
 #what if we have an actual box score? with colors?
 
-nbox_quants <- nbox_names_sub %>% mutate(quant_lg_alltime = NA, quant_lg_szn = NA, quant_p_alltime = NA, quant_p_szn = NA) %>% arrange(Person_id, Season, -PIE)
+nbox_quants <- nbox_names %>% mutate(quant_lg_alltime = NA, quant_lg_szn = NA, quant_p_alltime = NA, quant_p_szn = NA) %>% arrange(Person_id, Season, -PIE)
 
 for(i in 1:nrow(nbox_quants)){
   
@@ -121,9 +121,6 @@ for(i in 1:nrow(nbox_quants)){
   season <- nbox_quants$Season[i]
   pie <- nbox_quants$PIE[i]
   
-  #WHEN THIS FINISHES RUNNING FIX YOUR PLAYER SEASONS
-  #IT IS CURRENTLY EQUAL TO LEAGUE SEASON
-  #CHANGING ONE COL. SHOULD NOT TAKE NEARLY AS LONG :)
   nbox_lg_alltime <- nbox_quants$PIE
   nbox_lg_szn     <- nbox_quants$PIE[nbox_quants$Season == season]
   nbox_p_alltime  <- nbox_quants$PIE[nbox_quants$Person_id == player]
