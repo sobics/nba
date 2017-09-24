@@ -113,7 +113,7 @@ nbox_names_sub <- nbox_names %>% filter(Player_Name %in% c("LeBron James", "Lore
 
 nbox_quants <- nbox_names %>% mutate(quant_lg_alltime = NA, quant_lg_szn = NA, quant_p_alltime = NA, quant_p_szn = NA) %>% arrange(Person_id, Season, -PIE)
 
-for(i in 1:nrow(nbox_quants)){
+for(i in 225726:nrow(nbox_quants)){
   
   if(i %% 1000 == 0){print(i)}
   
@@ -138,5 +138,14 @@ X <- runif(100)
 ggplot(filter(nbox, Player_Name == "LeBron James"),
        aes(x=PIE)) + geom_histogram()
 
+save.image()
+save(file = "")
+```
 
+```{r}
+par(mfrow=c(3,3))
+for(j in 2007:2014){
+     hist(nbox_quants$PIE[nbox$Player_Name == "Gerald Wallace" & nbox$Season == j], main = j)
+}
+par(mfrow=c(1,1))
 ```
